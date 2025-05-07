@@ -41,6 +41,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:+")
     implementation("com.google.code.gson:gson:+")
 
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
