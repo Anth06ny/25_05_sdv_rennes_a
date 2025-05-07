@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
                     SearchScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
+
                 }
             }
         }

@@ -38,11 +38,16 @@ android {
 
 dependencies {
 
+    //requete
     implementation("com.squareup.okhttp3:okhttp:+")
+    //parsing json
     implementation("com.google.code.gson:gson:+")
 
+    //transforme mutablestateflow en observable pour compose
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
+    //image compose
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
