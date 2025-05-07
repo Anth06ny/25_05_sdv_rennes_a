@@ -84,7 +84,7 @@ object WeatherRepository {
 
     //Méthode qui prend en entrée une url, execute la requête
     //Retourne le code HTML/JSON reçu
-    fun sendGet(url: String): String {
+    private fun sendGet(url: String): String {
         println("url : $url")
         //Création de la requête
         val request = Request.Builder().url(url).build()
