@@ -1,6 +1,8 @@
 package com.amonteiro.a25_05_sdv_rennes_a.ui.screens
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +26,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -110,7 +114,7 @@ fun SearchBar(modifier: Modifier = Modifier) {
 
     TextField(
         value = "", //Valeur affichée
-        onValueChange = {newValue:String -> }, //Nouveau texte entrée
+        onValueChange = { newValue: String -> }, //Nouveau texte entrée
         leadingIcon = { //Image d'icone
             Icon(
                 imageVector = Icons.Default.Search,
@@ -140,6 +144,9 @@ fun SearchBar(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable //Composable affichant 1 PictureBean
 fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
+
+    val expended = remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -162,7 +169,14 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
                 .heightIn(max = 100.dp) //Sans hauteur il prendra tous l'écran
                 .widthIn(max = 100.dp)
         )
-        Column(modifier = Modifier.padding(5.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(5.dp)
+                .fillMaxWidth()
+                .clickable {
+                    expended.value = !expended.value
+                }
+        ) {
             Text(
                 text = data.title,
                 fontSize = 20.sp,
@@ -171,9 +185,11 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
             )
 
             Text(
-                text = data.longText.take(20), fontSize = 14.sp,
+                text = if(expended.value) data.longText else  data.longText.take(20),
+                fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onTertiary,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.animateContentSize()
             )
         }
     }
