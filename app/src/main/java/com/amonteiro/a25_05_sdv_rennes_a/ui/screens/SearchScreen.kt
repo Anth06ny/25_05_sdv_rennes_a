@@ -43,9 +43,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.amonteiro.a25_05_sdv_rennes_a.R
 import com.amonteiro.a25_05_sdv_rennes_a.model.PictureBean
 import com.amonteiro.a25_05_sdv_rennes_a.ui.MyError
+import com.amonteiro.a25_05_sdv_rennes_a.ui.Routes
 import com.amonteiro.a25_05_sdv_rennes_a.ui.theme._25_05_sdv_rennes_aTheme
 import com.amonteiro.a25_05_sdv_rennes_a.viewmodel.MainViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -91,7 +93,9 @@ fun SearchScreenWithDataPreview() {
 }
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = viewModel()) {
+fun SearchScreen(modifier: Modifier = Modifier,
+                 mainViewModel: MainViewModel = viewModel(),
+                 navHostController: NavHostController? = null) {
 
 
     //remember -> sauvegarde entre 2 rappel de SearchBar(recomposition)
@@ -122,7 +126,7 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = v
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1354f)) {
             items(list.size) {
-                PictureRowItem(data = list[it])
+                PictureRowItem(data = list[it], navHostController = navHostController)
             }
         }
 
@@ -193,7 +197,7 @@ fun SearchBar(modifier: Modifier = Modifier, searchText: MutableState<String>, o
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable //Composable affichant 1 PictureBean
-fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
+fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean, navHostController: NavHostController? = null) {
 
     val expended = remember { mutableStateOf(false) }
 
@@ -218,6 +222,9 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
             modifier = Modifier
                 .heightIn(max = 100.dp) //Sans hauteur il prendra tous l'écran
                 .widthIn(max = 100.dp)
+                .clickable{
+                    navHostController?.navigate(Routes.DetailRoute(data.id))
+                }
         )
         Column(
             modifier = Modifier

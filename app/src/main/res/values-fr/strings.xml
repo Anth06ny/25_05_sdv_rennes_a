@@ -3,4 +3,5 @@
     <string name="app_name">25_05_sdv_rennes_a</string>
     <string name="bt_load">Chargement</string>
     <string name="clear_filter">Effacer filtre</string>
+    <string name="bt_back">Retour</string>
 </resources>

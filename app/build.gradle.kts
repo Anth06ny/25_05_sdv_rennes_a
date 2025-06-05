@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    kotlin("plugin.serialization") version "2.0.0"
+
 }
 
 android {
@@ -52,6 +55,8 @@ dependencies {
     //pour le = viewModel
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
 
+    implementation("androidx.navigation:navigation-compose:2.8.+")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.+")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

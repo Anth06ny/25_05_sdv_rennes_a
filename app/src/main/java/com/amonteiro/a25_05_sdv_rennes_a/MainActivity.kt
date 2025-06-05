@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.amonteiro.a25_05_sdv_rennes_a.ui.screens.SearchScreen
+import com.amonteiro.a25_05_sdv_rennes_a.ui.AppNavigation
 import com.amonteiro.a25_05_sdv_rennes_a.ui.theme._25_05_sdv_rennes_aTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             _25_05_sdv_rennes_aTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SearchScreen(
+                    AppNavigation(
                         modifier = Modifier.padding(innerPadding)
                     )
 
