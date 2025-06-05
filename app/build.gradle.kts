@@ -49,6 +49,10 @@ dependencies {
     //image compose
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
 
+    //pour le = viewModel
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

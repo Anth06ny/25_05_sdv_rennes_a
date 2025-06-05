@@ -1,5 +1,6 @@
 package com.amonteiro.a25_05_sdv_rennes_a.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,30 +15,37 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.amonteiro.a25_05_sdv_rennes_a.R
 import com.amonteiro.a25_05_sdv_rennes_a.model.PictureBean
+import com.amonteiro.a25_05_sdv_rennes_a.ui.MyError
 import com.amonteiro.a25_05_sdv_rennes_a.ui.theme._25_05_sdv_rennes_aTheme
 import com.amonteiro.a25_05_sdv_rennes_a.viewmodel.MainViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -55,21 +63,62 @@ fun SearchScreenPreview() {
     //Utilisé par exemple dans MainActivity.kt sous setContent {...}
     _25_05_sdv_rennes_aTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            SearchScreen(modifier = Modifier.padding(innerPadding))
+            val mainViewModel = MainViewModel()
+            //mainViewModel.loadFakeData(runInProgress=true, errorMessage="Une erreur")
+
+            SearchScreen(modifier = Modifier.padding(innerPadding), mainViewModel = mainViewModel)
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, name = "1")
+@Preview(
+    showBackground = true, showSystemUi = true, name = "2",
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES or android.content.res.Configuration.UI_MODE_TYPE_NORMAL, locale = "fr"
+)
+@Composable
+fun SearchScreenWithDataPreview() {
+    //Il faut remplacer NomVotreAppliTheme par le thème de votre application
+    //Utilisé par exemple dans MainActivity.kt sous setContent {...}
+    _25_05_sdv_rennes_aTheme {
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            val mainViewModel = MainViewModel()
+            mainViewModel.loadFakeData(runInProgress = true, errorMessage = "Une erreur")
+
+            SearchScreen(modifier = Modifier.padding(innerPadding), mainViewModel = mainViewModel)
         }
     }
 }
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = MainViewModel()) {
+fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = viewModel()) {
+
+
+    //remember -> sauvegarde entre 2 rappel de SearchBar(recomposition)
+    //mutableStateOf donnée observaable de compose
+    var searchText = remember { mutableStateOf("") }
+    val list = mainViewModel.dataList.collectAsStateWithLifecycle().value//.filter { it.title.contains(searchText.value, true) }
+    val runInProgress = mainViewModel.runInProgress.collectAsStateWithLifecycle().value
+    val errorMessage = mainViewModel.errorMessage.collectAsStateWithLifecycle().value
 
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val list = mainViewModel.dataList.collectAsStateWithLifecycle().value
+        //Transforme donnée observable -> donnée observable pour compose
+        SearchBar(
+            searchText = searchText,
+            onSearch = {mainViewModel.loadWeathers(searchText.value)})
 
-        SearchBar()
+        MyError(
+            errorMessage = errorMessage
+        )
+
+        AnimatedVisibility(runInProgress) {
+            CircularProgressIndicator()
+        }
+
+
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1354f)) {
             items(list.size) {
@@ -79,7 +128,7 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = M
 
         Row {
             Button(
-                onClick = { /* Do something! */ },
+                onClick = { searchText.value = "" },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding
             ) {
                 Icon(
@@ -92,7 +141,7 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = M
             }
 
             Button(
-                onClick = { /* Do something! */ },
+                onClick = { mainViewModel.loadWeathers(searchText.value) },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding
             ) {
                 Icon(
@@ -109,12 +158,11 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = M
 
 
 @Composable
-fun SearchBar(modifier: Modifier = Modifier) {
-
+fun SearchBar(modifier: Modifier = Modifier, searchText: MutableState<String>, onSearch: () -> Unit = {}) {
 
     TextField(
-        value = "", //Valeur affichée
-        onValueChange = { newValue: String -> }, //Nouveau texte entrée
+        value = searchText.value, //Valeur affichée
+        onValueChange = { newValue: String -> searchText.value = newValue }, //Nouveau texte entrée
         leadingIcon = { //Image d'icone
             Icon(
                 imageVector = Icons.Default.Search,
@@ -132,8 +180,10 @@ fun SearchBar(modifier: Modifier = Modifier) {
         //Text("Recherche")
         //},
 
-        //keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search), // Définir le bouton "Entrée" comme action de recherche
-        //keyboardActions = KeyboardActions(onSearch = {onSearchAction()}), // Déclenche l'action définie
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search), // Définir le bouton "Entrée" comme action de recherche
+        keyboardActions = KeyboardActions(onSearch = {
+            onSearch()
+        }), // Déclenche l'action définie
         //Comment le composant doit se placer
         modifier = modifier
             .fillMaxWidth() // Prend toute la largeur
@@ -185,7 +235,7 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
             )
 
             Text(
-                text = if(expended.value) data.longText else  data.longText.take(20),
+                text = if (expended.value) data.longText else data.longText.take(20),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onTertiary,
                 style = MaterialTheme.typography.bodySmall,

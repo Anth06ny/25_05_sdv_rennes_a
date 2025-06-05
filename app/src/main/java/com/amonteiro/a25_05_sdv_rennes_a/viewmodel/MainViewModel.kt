@@ -21,23 +21,29 @@ fun main() {
     println("ErrorMessage : ${viewModel.errorMessage.value}")
 }
 
-open class MainViewModel : ViewModel() {
+class MainViewModel : ViewModel() {
+
     //MutableStateFlow est une donnée observable
     val dataList = MutableStateFlow(emptyList<PictureBean>())
+    //tache en cours
     val runInProgress = MutableStateFlow(false)
     val errorMessage = MutableStateFlow("")
 
     init {//Création d'un jeu de donnée au démarrage
-        loadFakeData()
+        println("init ViewModel")
+        //loadFakeData()
     }
 
     fun loadWeathers(cityName: String) {
         runInProgress.value = true
         errorMessage.value = ""
 
+        //tâche asynchrone
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                //je vais chercher les données (long)
                 val list = WeatherRepository.loadWeathers(cityName)
+                //Traitement
                 dataList.value = list.map { city ->
                     PictureBean(
                         id = city.id,
